@@ -1,7 +1,8 @@
 import * as api from './api/board-api-client.js';
 import * as boardState from './state/board-state.js';
 import { renderBoard, attachInteractionHandlers } from './ui/board-view.js';
-import * as realtime from './api/board-realtime-client.js';
+import * as realtime from './realtime/board-realtime-client.js';
+import { actorId } from './realtime/board-realtime-client.js';
 
 const state = boardState.createInitialState();
 let pendingConnectorSourceId = null;
@@ -150,10 +151,11 @@ function handleSelect(elementId) {
 
 function handleRealtimeEvent(event) {
     if (!state.board || event.boardId !== state.board.id) return;
+    if (event.actorId === actorId) return;
     if (event.type === 'ELEMENT_MOVED') {
-        const el = boardState.findElement(state, event.element.id);
-        if (!el) return;
-        boardState.moveElement(state, event.element.id, event.element.x, event.element.y);
+        const { elementId, x, y } = event.payload;
+        if (!boardState.findElement(state, elementId)) return;
+        boardState.moveElement(state, elementId, x, y);
         rerender();
     }
 }
@@ -165,11 +167,7 @@ function handleMove(elementId, x, y) {
 
 function handleMoveEnd(elementId, x, y) {
     if (!state.board) return;
-    realtime.publish(state.board.id, 'move', {
-        type: 'ELEMENT_MOVED',
-        boardId: state.board.id,
-        element: { id: elementId, x, y },
-    });
+    realtime.publishElementMoved(elementId, x, y);
 }
 
 attachInteractionHandlers(svgEl, {

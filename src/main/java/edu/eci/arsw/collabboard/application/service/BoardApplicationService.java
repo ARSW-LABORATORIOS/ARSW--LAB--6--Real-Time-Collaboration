@@ -7,7 +7,6 @@ import edu.eci.arsw.collabboard.domain.model.BoardElement;
 import edu.eci.arsw.collabboard.domain.model.ElementType;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,23 +27,6 @@ public class BoardApplicationService {
     public Board getBoard(String boardId) {
         return repository.findById(boardId)
                 .orElseThrow(() -> new BoardNotFoundException(boardId));
-    }
-
-    public BoardElement moveElement(String boardId, String elementId, double x, double y) {
-        Board board = getBoard(boardId);
-        List<BoardElement> updated = new ArrayList<>();
-        BoardElement moved = null;
-        for (BoardElement el : board.elements()) {
-            if (el.id().equals(elementId)) {
-                moved = new BoardElement(el.id(), el.type(), x, y, el.width(), el.height(), el.text(), el.sourceId(), el.targetId());
-                updated.add(moved);
-            } else {
-                updated.add(el);
-            }
-        }
-        if (moved == null) throw new IllegalArgumentException("Element not found: " + elementId);
-        repository.save(new Board(board.id(), board.name(), updated));
-        return moved;
     }
 
     public Board replaceBoard(String boardId, String name, List<BoardElement> elements) {
