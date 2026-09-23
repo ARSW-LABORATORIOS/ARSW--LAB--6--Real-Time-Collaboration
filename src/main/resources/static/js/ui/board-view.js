@@ -89,7 +89,7 @@ function toSvgPoint(svgEl, event) {
     return { x: event.clientX - rect.left, y: event.clientY - rect.top };
 }
 
-// handlers: { getElement(id), onSelect(id), onMove(id, x, y), onDeleteRequest(id) }
+// handlers: { getElement(id), onSelect(id), onMove(id, x, y), onMoveEnd(id, x, y), onDeleteRequest(id) }
 export function attachInteractionHandlers(svgEl, handlers) {
     let drag = null;
 
@@ -124,7 +124,13 @@ export function attachInteractionHandlers(svgEl, handlers) {
         handlers.onMove(drag.elementId, newX, newY);
     });
 
-    window.addEventListener('mouseup', () => {
+    window.addEventListener('mouseup', (event) => {
+        if (drag) {
+            const point = toSvgPoint(svgEl, event);
+            const finalX = drag.originX + (point.x - drag.startPointX);
+            const finalY = drag.originY + (point.y - drag.startPointY);
+            if (handlers.onMoveEnd) handlers.onMoveEnd(drag.elementId, finalX, finalY);
+        }
         drag = null;
     });
 

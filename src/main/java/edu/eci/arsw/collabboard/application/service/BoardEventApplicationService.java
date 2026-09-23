@@ -44,7 +44,22 @@ public class BoardEventApplicationService {
     // TODO LAB-06 (Nicolas - feature/element-moved): ubicar el elemento por id
     // en board.elements(), validar que exista, actualizar x/y y guardar.
     private Board applyElementMoved(Board board, BoardEvent event) {
-        throw new UnsupportedOperationException("TODO LAB-06: ELEMENT_MOVED");
+        String elementId = (String) event.payload().get("elementId");
+        double x = ((Number) event.payload().get("x")).doubleValue();
+        double y = ((Number) event.payload().get("y")).doubleValue();
+
+        boolean exists = board.elements().stream().anyMatch(e -> e.id().equals(elementId));
+        if (!exists) throw new IllegalArgumentException("Element not found: " + elementId);
+
+        var updatedElements = board.elements().stream()
+                .map(e -> e.id().equals(elementId)
+                        ? new edu.eci.arsw.collabboard.domain.model.BoardElement(
+                                e.id(), e.type(), x, y, e.width(), e.height(), e.text(), e.sourceId(), e.targetId())
+                        : e)
+                .toList();
+
+        Board updated = new Board(board.id(), board.name(), updatedElements);
+        return repository.save(updated);
     }
 
     // ELEMENT_UPDATED no esta en el alcance funcional obligatorio de este lab

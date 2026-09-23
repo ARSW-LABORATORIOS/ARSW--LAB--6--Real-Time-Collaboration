@@ -1,6 +1,8 @@
 import * as api from './api/board-api-client.js';
 import * as boardState from './state/board-state.js';
 import { renderBoard, attachInteractionHandlers } from './ui/board-view.js';
+import * as realtime from './realtime/board-realtime-client.js';
+import { actorId } from './realtime/board-realtime-client.js';
 
 const state = boardState.createInitialState();
 let pendingConnectorSourceId = null;
@@ -57,6 +59,7 @@ async function handleNewBoard() {
     const board = await runRemoteOperation('createBoard', () => api.createBoard(name));
     if (board) {
         boardState.setBoard(state, board);
+        realtime.connect(board.id, handleRealtimeEvent);
         showHint('');
         boardNameInput.value = '';
     }
@@ -72,6 +75,7 @@ async function handleLoadBoard() {
     const board = await runRemoteOperation('loadBoard', () => api.loadBoard(boardId));
     if (board) {
         boardState.setBoard(state, board);
+        realtime.connect(board.id, handleRealtimeEvent);
         showHint('');
     }
     rerender();
@@ -145,9 +149,25 @@ function handleSelect(elementId) {
     rerender();
 }
 
+function handleRealtimeEvent(event) {
+    if (!state.board || event.boardId !== state.board.id) return;
+    if (event.actorId === actorId) return;
+    if (event.type === 'ELEMENT_MOVED') {
+        const { elementId, x, y } = event.payload;
+        if (!boardState.findElement(state, elementId)) return;
+        boardState.moveElement(state, elementId, x, y);
+        rerender();
+    }
+}
+
 function handleMove(elementId, x, y) {
     boardState.moveElement(state, elementId, x, y);
     rerender();
+}
+
+function handleMoveEnd(elementId, x, y) {
+    if (!state.board) return;
+    realtime.publishElementMoved(elementId, x, y);
 }
 
 attachInteractionHandlers(svgEl, {
@@ -155,6 +175,7 @@ attachInteractionHandlers(svgEl, {
     selectedElementId: () => state.selectedElementId,
     onSelect: handleSelect,
     onMove: handleMove,
+    onMoveEnd: handleMoveEnd,
     onDeleteRequest: handleDeleteSelected,
 });
 
