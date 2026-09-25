@@ -105,7 +105,8 @@ function requireBoard() {
 
 function handleAddRectangle() {
     if (!requireBoard()) return;
-    boardState.addElement(state, { type: 'RECTANGLE', x: 60, y: 60, width: 140, height: 80 });
+    const element = boardState.addElement(state, { type: 'RECTANGLE', x: 60, y: 60, width: 140, height: 80 });
+    realtime.publishElementCreated(element);
     showHint('');
     rerender();
 }
@@ -113,7 +114,8 @@ function handleAddRectangle() {
 function handleAddText() {
     if (!requireBoard()) return;
     const text = textContentInput.value;
-    boardState.addElement(state, { type: 'TEXT', x: 60, y: 60, width: 140, height: 30, text });
+    const element = boardState.addElement(state, { type: 'TEXT', x: 60, y: 60, width: 140, height: 30, text });
+    realtime.publishElementCreated(element);
     textContentInput.value = '';
     showHint('');
     rerender();
@@ -165,6 +167,13 @@ function handleSelect(elementId) {
 function handleRealtimeEvent(event) {
     if (!state.board || event.boardId !== state.board.id) return;
     if (event.actorId === actorId) return;
+
+    if (event.type === 'ELEMENT_CREATED') {
+        const { id, type, x, y, width, height, text } = event.payload;
+        boardState.addElement(state, { id, type, x, y, width, height, text });
+        rerender();
+        return;
+    }
 
     if (event.type === 'ELEMENT_MOVED') {
         const { elementId, x, y } = event.payload;
