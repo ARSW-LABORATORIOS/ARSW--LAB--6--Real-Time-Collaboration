@@ -131,20 +131,33 @@ function handleConnect() {
 
 function handleDeleteSelected() {
     if (!state.selectedElementId) return;
-    boardState.deleteElement(state, state.selectedElementId);
+
+    const elementId = state.selectedElementId;
+
+    boardState.deleteElement(state, elementId);
+    realtime.publishElementDeleted(elementId);
+
     rerender();
 }
 
 function handleSelect(elementId) {
     if (pendingConnectorSourceId && pendingConnectorSourceId !== elementId) {
         try {
-            boardState.addConnector(state, pendingConnectorSourceId, elementId);
+            const connector = boardState.addConnector(
+                state,
+                pendingConnectorSourceId,
+                elementId
+            );
+
+            realtime.publishConnectorCreated(connector);
             showHint('');
         } catch (error) {
             showHint(error.message);
         }
+
         pendingConnectorSourceId = null;
     }
+
     boardState.selectElement(state, elementId);
     rerender();
 }
@@ -152,10 +165,34 @@ function handleSelect(elementId) {
 function handleRealtimeEvent(event) {
     if (!state.board || event.boardId !== state.board.id) return;
     if (event.actorId === actorId) return;
+
     if (event.type === 'ELEMENT_MOVED') {
         const { elementId, x, y } = event.payload;
+
         if (!boardState.findElement(state, elementId)) return;
+
         boardState.moveElement(state, elementId, x, y);
+        rerender();
+        return;
+    }
+
+    if (event.type === 'CONNECTOR_CREATED') {
+        const { id, sourceId, targetId } = event.payload;
+
+        if (!boardState.findElement(state, sourceId)) return;
+        if (!boardState.findElement(state, targetId)) return;
+
+        boardState.addConnector(state, sourceId, targetId, id);
+        rerender();
+        return;
+    }
+
+    if (event.type === 'ELEMENT_DELETED') {
+        const { elementId } = event.payload;
+
+        if (!boardState.findElement(state, elementId)) return;
+
+        boardState.deleteElement(state, elementId);
         rerender();
     }
 }
