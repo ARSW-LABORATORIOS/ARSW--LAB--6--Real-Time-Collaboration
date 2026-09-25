@@ -17,6 +17,60 @@ import static org.junit.jupiter.api.Assertions.*;
 class BoardEventApplicationServiceTest {
 
     @Test
+    void shouldApplyElementCreatedEvent() {
+        InMemoryBoardRepository repository = new InMemoryBoardRepository();
+        BoardEventApplicationService service = new BoardEventApplicationService(repository);
+
+        repository.save(new Board("board-1", "Board", List.of()));
+
+        BoardEvent event = new BoardEvent(
+                "event-1", "board-1", BoardEventType.ELEMENT_CREATED, "actor-1", Instant.now(),
+                Map.of("id", "e1", "type", "RECTANGLE", "x", 60, "y", 60, "width", 140, "height", 80, "text", "")
+        );
+
+        Board updated = service.apply("board-1", event);
+
+        assertEquals(1, updated.elements().size());
+        assertEquals("e1", updated.elements().getFirst().id());
+        assertEquals(ElementType.RECTANGLE, updated.elements().getFirst().type());
+    }
+
+    @Test
+    void shouldApplyElementMovedEvent() {
+        InMemoryBoardRepository repository = new InMemoryBoardRepository();
+        BoardEventApplicationService service = new BoardEventApplicationService(repository);
+
+        BoardElement element = new BoardElement("e1", ElementType.RECTANGLE, 10, 10, 100, 50, "");
+        repository.save(new Board("board-1", "Board", List.of(element)));
+
+        BoardEvent event = new BoardEvent(
+                "event-2", "board-1", BoardEventType.ELEMENT_MOVED, "actor-1", Instant.now(),
+                Map.of("elementId", "e1", "x", 200, "y", 300)
+        );
+
+        Board updated = service.apply("board-1", event);
+
+        BoardElement moved = updated.elements().getFirst();
+        assertEquals(200.0, moved.x());
+        assertEquals(300.0, moved.y());
+    }
+
+    @Test
+    void shouldRejectElementMovedWhenElementDoesNotExist() {
+        InMemoryBoardRepository repository = new InMemoryBoardRepository();
+        BoardEventApplicationService service = new BoardEventApplicationService(repository);
+
+        repository.save(new Board("board-1", "Board", List.of()));
+
+        BoardEvent event = new BoardEvent(
+                "event-3", "board-1", BoardEventType.ELEMENT_MOVED, "actor-1", Instant.now(),
+                Map.of("elementId", "no-existe", "x", 100, "y", 100)
+        );
+
+        assertThrows(IllegalArgumentException.class, () -> service.apply("board-1", event));
+    }
+
+    @Test
     void shouldApplyConnectorCreatedEvent() {
         InMemoryBoardRepository repository = new InMemoryBoardRepository();
         BoardEventApplicationService service =
