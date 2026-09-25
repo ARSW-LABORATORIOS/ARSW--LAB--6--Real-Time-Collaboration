@@ -6,27 +6,27 @@
     <title>ARSW Collaborative Board</title>
     <style>
         * { box-sizing: border-box; }
-        body { font-family: system-ui, sans-serif; max-width: 1000px; margin: 32px auto; padding: 0 24px; line-height: 1.5; color: #1e293b; background: #f1f5f9; }
-        h1 { color: #1e293b; font-size: 1.4rem; margin-bottom: 12px; }
-        .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; background: #fff; padding: 10px 14px; border-radius: 10px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
-        .toolbar button { padding: 6px 14px; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; color: #334155; cursor: pointer; font-size: 13px; transition: background .15s; }
-        .toolbar button:hover { background: #e2e8f0; }
+        body { font-family: system-ui, sans-serif; max-width: 1000px; margin: 32px auto; padding: 0 24px; line-height: 1.5; color: #1e1b4b; background: linear-gradient(135deg, #ede9fe 0%, #dbeafe 100%); min-height: 100vh; }
+        h1 { color: #4c1d95; font-size: 1.4rem; margin-bottom: 12px; }
+        .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; background: #fff; padding: 10px 14px; border-radius: 10px; border: 1px solid #c4b5fd; box-shadow: 0 2px 8px rgba(109,40,217,.1); }
+        .toolbar button { padding: 6px 14px; border: 1px solid #a78bfa; border-radius: 6px; background: #f5f3ff; color: #5b21b6; cursor: pointer; font-size: 13px; transition: background .15s; }
+        .toolbar button:hover { background: #ede9fe; }
         .toolbar button:disabled { opacity: .45; cursor: default; }
-        .toolbar input { padding: 5px 10px; border: 1px solid #cbd5e1; border-radius: 6px; width: 140px; font-size: 13px; color: #334155; }
-        #board-id-display { margin-left: auto; align-self: center; color: #64748b; font-size: 13px; }
-        #board-svg { border: 1px solid #e2e8f0; border-radius: 10px; background: #fff; width: 100%; height: 520px; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
+        .toolbar input { padding: 5px 10px; border: 1px solid #a78bfa; border-radius: 6px; width: 140px; font-size: 13px; color: #3730a3; }
+        #board-id-display { margin-left: auto; align-self: center; color: #6d28d9; font-size: 13px; font-weight: 500; }
+        #board-svg { border: 1.5px solid #a78bfa; border-radius: 12px; background: #faf8ff; width: 100%; height: 520px; box-shadow: 0 4px 16px rgba(109,40,217,.12); }
         .status, .hint { margin-top: 8px; padding: 6px 12px; border-radius: 6px; font-size: 13px; min-height: 20px; }
-        .status-loading { background: #fef9c3; color: #854d0e; }
-        .status-success { background: #dcfce7; color: #166534; }
+        .status-loading { background: #ede9fe; color: #5b21b6; }
+        .status-success { background: #dbeafe; color: #1e40af; }
         .status-error { background: #fee2e2; color: #991b1b; }
-        .hint { background: #eff6ff; color: #1e40af; }
+        .hint { background: #eff6ff; color: #3730a3; }
         .hint:empty { display: none; }
-        .board-element.rectangle { fill: #dbeafe; stroke: #3b82f6; stroke-width: 1.5; cursor: move; }
-        .board-element.rectangle.selected { stroke: #f97316; stroke-width: 2.5; }
-        .text-background { fill: #fefce8; stroke: #eab308; stroke-width: 1.5; cursor: move; }
-        .board-element.text.selected .text-background { stroke: #f97316; stroke-width: 2.5; }
-        .text-content { font-size: 13px; fill: #1e293b; pointer-events: none; }
-        .connector { stroke: #94a3b8; stroke-width: 2; }
+        .board-element.rectangle { fill: #ddd6fe; stroke: #7c3aed; stroke-width: 1.5; cursor: move; }
+        .board-element.rectangle.selected { stroke: #2563eb; stroke-width: 2.5; }
+        .text-background { fill: #eff6ff; stroke: #3b82f6; stroke-width: 1.5; cursor: move; }
+        .board-element.text.selected .text-background { stroke: #7c3aed; stroke-width: 2.5; }
+        .text-content { font-size: 13px; fill: #1e1b4b; pointer-events: none; }
+        .connector { stroke: #818cf8; stroke-width: 2; }
     </style>
 </head>
 <body>
