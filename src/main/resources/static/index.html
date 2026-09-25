@@ -5,26 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ARSW Collaborative Board</title>
     <style>
-        body { font-family: system-ui, sans-serif; max-width: 960px; margin: 32px auto; padding: 0 20px; line-height: 1.5; color: #333; background: #5c1a2b; }
-        h1 { color: #f3e3e6; }
-        .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 8px; }
-        .toolbar button { padding: 6px 12px; border: 1px solid #cbd6df; border-radius: 6px; background: #f6f9fb; cursor: pointer; }
-        .toolbar button:hover { background: #e8f0f7; }
-        .toolbar input { padding: 5px 8px; border: 1px solid #cbd6df; border-radius: 6px; width: 130px; }
-        #board-id-display { margin-left: auto; align-self: center; color: #556; font-size: 14px; }
-        #board-svg { border: 1px solid #cbd6df; border-radius: 8px; background: #fff; width: 100%; height: 500px; }
-        .status, .hint { margin-top: 8px; padding: 6px 10px; border-radius: 6px; font-size: 14px; min-height: 20px; }
-        .status-loading { background: #fff3cd; }
-        .status-success { background: #d4edda; }
-        .status-error { background: #f8d7da; }
-        .hint { background: #e8f0f7; color: #1d2733; }
+        * { box-sizing: border-box; }
+        body { font-family: system-ui, sans-serif; max-width: 1000px; margin: 32px auto; padding: 0 24px; line-height: 1.5; color: #1e1b4b; background: linear-gradient(135deg, #6d28d9 0%, #1d4ed8 100%); min-height: 100vh; }
+        h1 { color: #3b0764; font-size: 1.4rem; margin-bottom: 12px; }
+        .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; background: #fff; padding: 10px 14px; border-radius: 10px; border: 1px solid #7c3aed; box-shadow: 0 2px 8px rgba(76,29,149,.15); }
+        .toolbar button { padding: 6px 14px; border: 1px solid #7c3aed; border-radius: 6px; background: #ede9fe; color: #3b0764; cursor: pointer; font-size: 13px; transition: background .15s; }
+        .toolbar button:hover { background: #ddd6fe; }
+        .toolbar button:disabled { opacity: .45; cursor: default; }
+        .toolbar input { padding: 5px 10px; border: 1px solid #7c3aed; border-radius: 6px; width: 140px; font-size: 13px; color: #3b0764; }
+        #board-id-display { margin-left: auto; align-self: center; color: #4c1d95; font-size: 13px; font-weight: 500; }
+        #board-svg { border: 1.5px solid #7c3aed; border-radius: 12px; background: #faf8ff; width: 100%; height: 520px; box-shadow: 0 4px 16px rgba(76,29,149,.15); }
+        .status, .hint { margin-top: 8px; padding: 6px 12px; border-radius: 6px; font-size: 13px; min-height: 20px; }
+        .status-loading { background: #ddd6fe; color: #3b0764; }
+        .status-success { background: #dbeafe; color: #1e40af; }
+        .status-error { background: #fee2e2; color: #991b1b; }
+        .hint { background: #eff6ff; color: #3730a3; }
         .hint:empty { display: none; }
-        .board-element.rectangle { fill: #cfe2ff; stroke: #4d7dc9; stroke-width: 1.5; cursor: move; }
-        .board-element.rectangle.selected { stroke: #d9480f; stroke-width: 3; }
-        .text-background { fill: #fff8dc; stroke: #d8c46a; cursor: move; }
-        .board-element.text.selected .text-background { stroke: #d9480f; stroke-width: 3; }
-        .text-content { font-size: 14px; pointer-events: none; }
-        .connector { stroke: #556; stroke-width: 2; }
+        .board-element.rectangle { fill: #c4b5fd; stroke: #5b21b6; stroke-width: 1.5; cursor: move; }
+        .board-element.rectangle.selected { stroke: #1d4ed8; stroke-width: 2.5; }
+        .text-background { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; cursor: move; }
+        .board-element.text.selected .text-background { stroke: #5b21b6; stroke-width: 2.5; }
+        .text-content { font-size: 13px; fill: #1e1b4b; pointer-events: none; }
+        .connector { stroke: #6d28d9; stroke-width: 2; }
     </style>
 </head>
 <body>

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import edu.eci.arsw.collabboard.domain.model.BoardElement;
 import edu.eci.arsw.collabboard.domain.model.ElementType;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Validates and applies a BoardEvent against the authoritative Board state.
@@ -41,7 +42,20 @@ public class BoardEventApplicationService {
     // (RECTANGLE o TEXT) a partir de event.payload(), agregarlo a los elementos
     // del Board y guardar con repository.save(...). Devolver el Board actualizado.
     private Board applyElementCreated(Board board, BoardEvent event) {
-        throw new UnsupportedOperationException("TODO LAB-06: ELEMENT_CREATED");
+        String id = (String) event.payload().get("id");
+        String typeStr = (String) event.payload().get("type");
+        double x = ((Number) event.payload().get("x")).doubleValue();
+        double y = ((Number) event.payload().get("y")).doubleValue();
+        double width = ((Number) event.payload().get("width")).doubleValue();
+        double height = ((Number) event.payload().get("height")).doubleValue();
+        String text = event.payload().get("text") != null ? (String) event.payload().get("text") : "";
+
+        BoardElement element = new BoardElement(id, ElementType.valueOf(typeStr), x, y, width, height, text);
+
+        List<BoardElement> updated = new ArrayList<>(board.elements());
+        updated.add(element);
+
+        return repository.save(new Board(board.id(), board.name(), updated));
     }
 
     // TODO LAB-06 (Nicolas - feature/element-moved): ubicar el elemento por id
