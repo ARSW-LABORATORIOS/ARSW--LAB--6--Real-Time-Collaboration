@@ -24,7 +24,7 @@ export function findElement(state, elementId) {
 
 export function addElement(state, partial) {
     const element = {
-        id: generateElementId(),
+        id: partial.id ?? generateElementId(),
         type: partial.type,
         x: partial.x ?? 40,
         y: partial.y ?? 40,
@@ -38,11 +38,17 @@ export function addElement(state, partial) {
     return element;
 }
 
-export function addConnector(state, sourceId, targetId) {
+export function addConnector(state, sourceId, targetId, id = null) {
     if (!sourceId || !targetId || sourceId === targetId) {
         throw new Error('CONNECTOR requiere dos elementos distintos');
     }
-    return addElement(state, { type: 'CONNECTOR', sourceId, targetId });
+
+    return addElement(state, {
+        id,
+        type: 'CONNECTOR',
+        sourceId,
+        targetId
+    });
 }
 
 export function selectElement(state, elementId) {
